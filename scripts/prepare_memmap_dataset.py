@@ -369,7 +369,7 @@ def make_source_and_target(
     type=int,
     help="Maximum number of tokens to store in a single memmap file (default: 512M tokens or 1GB)",
 )
-@click.option("--debug/--no-debug", default=False, help="Enable debug (single process mode)")
+@click.option("--debug/--no-debug", default=True, help="Enable debug (single process mode)")
 @click.option(
     "--safe-mode/--fast-mode", default=False, help="Safe mode caches locally and decompresses using gzip.open"
 )
@@ -383,7 +383,7 @@ def main(
     validate: bool = False,
     max_tokens: int = 512 * 1024 * 1024,
     safe_mode: bool = False,
-    debug: bool = False,
+    debug: bool = True,
     sample_rate: float = 1.0,
     random_seed: int = 3920,
     repeat_sequence: int = 1,
