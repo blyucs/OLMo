@@ -242,6 +242,7 @@ def fill_memmap(
 
     # we need to make a new tokenizer here because it's not pickleable
     tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+    # tokenizer = Tokenizer.from_file(tokenizer_id, truncate_to=None)
 
     # first memmap file will be created in the loop below
     memmap: Optional[MemmapFile] = None
@@ -350,8 +351,10 @@ def make_source_and_target(
     type=str,
     help="Name of path of a pretrained tokenizer",
     default="allenai/eleuther-ai-gpt-neox-20b-pii-special",
+    # default="meta-llama/Meta-Llama-3-70B-Instruct",
 )
 @click.option("--dtype", "dtype_str", default="uint16")
+# @click.option("--dtype", "dtype_str", default="uint32")
 @click.option("--validate/--no-validate", default=False)
 @click.option("--sample-rate", type=click.FloatRange(min=0.0, max=1.0), default=1.0)
 @click.option("--random-seed", type=int, default=3920)
@@ -379,7 +382,7 @@ def main(
     src: Tuple[str, ...],
     output: str,
     tokenizer_id: str = "EleutherAI/gpt-neox-20b",
-    dtype_str: str = "uint16",
+    dtype_str: str = "uint16", # "uint32", # "uint16"
     validate: bool = False,
     max_tokens: int = 512 * 1024 * 1024,
     safe_mode: bool = False,
@@ -468,6 +471,7 @@ def main(
     if validate:
         log.info("Validating...")
         tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+        # tokenizer = Tokenizer.from_file("/home/lvbo/olmo_data/tokenizer.json", truncate_to=None)
 
         def encode_fn(row):
             return tokenizer.encode(json.loads(row)["text"], add_special_tokens=True)  # noqa
