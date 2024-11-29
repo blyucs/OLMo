@@ -49,7 +49,8 @@ from olmo import Tokenizer
 from olmo.util import prepare_cli_environment
 
 log = logging.getLogger(__name__)
-
+# Set the logging level to INFO
+log.setLevel(logging.INFO)
 T = TypeVar("T", bound=Sequence)
 
 
@@ -179,7 +180,7 @@ class MemmapFile:
                 self._local_path = Path(f.name)
 
         self._memmap = np.memmap(mode="w+", filename=self._local_path, dtype=self.dtype, shape=(self.max_tokens,))
-        log.info(f"Created memmap file at {self._local_path} of size {self._memmap.nbytes:,} bytes")
+        log.error(f"Created memmap file at {self._local_path} of size {self._memmap.nbytes:,} bytes")
 
         return self
 
@@ -206,7 +207,7 @@ class MemmapFile:
                 old_memmap = np.memmap(mode="r", filename=temp_path, dtype=self.dtype, shape=(self.max_tokens,))
                 new_memmap[:] = old_memmap[: self._written_tokens]
                 new_memmap.flush()
-                log.info(f"Resized memmap file from {old_memmap.nbytes:,} to {new_memmap.nbytes:,} bytes")
+                log.error(f"Resized memmap file from {old_memmap.nbytes:,} to {new_memmap.nbytes:,} bytes")
                 os.remove(temp_path)
 
             if not self.path.is_local:
@@ -214,7 +215,7 @@ class MemmapFile:
                     f = stack.enter_context(stream_file_for_read(self._local_path, "rb"))
                     g = stack.enter_context(open_file_for_write(self.path, mode="wb"))
                     g.write(f.read())
-                log.info(f"Written memmap file to {self.path.as_str}")
+                log.error(f"Written memmap file to {self.path.as_str}")
         finally:
             if not self.path.is_local:
                 # delete the temporary file under any circumstances
@@ -241,7 +242,9 @@ def fill_memmap(
     np.random.seed(random_seed)
 
     # we need to make a new tokenizer here because it's not pickleable
-    tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+    # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+    # tokenizer = Tokenizer.from_file(tokenizer_id, truncate_to=None)
+    tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
 
     # first memmap file will be created in the loop below
     memmap: Optional[MemmapFile] = None
@@ -323,12 +326,19 @@ def make_source_and_target(
         exploded_src = [
             sorted(exploded_src[i : i + paths_per_worker]) for i in range(0, len(exploded_src), paths_per_worker)
         ]
+    # exploded_dst = []
+    # Construct unique destination paths based on each src entry
+
+    # Extract the base name for destination path naming
+    # base_filename = src[0].split('/')[-1].split('.')[0]  # Extracts 'output_file' from '/home/lvbo/olmo_data/output_file.json.gz'
+    base_filename = os.path.basename(src[0])  # Extracts the last part of the path without any file extension
 
     # determine the destination paths
-    exploded_dst = [f'{output.rstrip("/")}/{i:0{output_digits}d}' for i in range(len(exploded_src))]
+    exploded_dst = [f'{output.rstrip("/")}/{base_filename}_{i:0{output_digits}d}' for i in range(len(exploded_src))]
+    print(exploded_src)
+    print(exploded_dst)
 
     return tuple(exploded_src), tuple(exploded_dst)
-
 
 @click.command()
 @click.argument(
@@ -373,17 +383,17 @@ def make_source_and_target(
 @click.option(
     "--safe-mode/--fast-mode", default=False, help="Safe mode caches locally and decompresses using gzip.open"
 )
-@click.option("-j", "--workers", "max_workers", type=int, default=1, help="Defaults to number of CPUs")
+@click.option("-j", "--workers", "max_workers", type=int, default=20, help="Defaults to number of CPUs")
 @click.option("--ack-deprecated", is_flag=True, help="Acknowledge that this command is deprecated")
 def main(
     src: Tuple[str, ...],
     output: str,
     tokenizer_id: str = "EleutherAI/gpt-neox-20b",
-    dtype_str: str = "uint16",
+    dtype_str: str = "uint16", # "uint32", # "uint16"
     validate: bool = False,
     max_tokens: int = 512 * 1024 * 1024,
     safe_mode: bool = False,
-    debug: bool = False,
+    debug: bool = True,
     sample_rate: float = 1.0,
     random_seed: int = 3920,
     repeat_sequence: int = 1,
@@ -398,11 +408,11 @@ def main(
         "https://github.com/allenai/dolma/blob/main/docs/tokenize.md"
     )
 
-    if not ack_deprecated:
-        continue_question = input("Do you want to continue? [y/N]: ")
-        if not (c := continue_question.lower().strip()) or c != "y":
-            print("Aborting.")
-            return
+    # if not ack_deprecated:
+    #     continue_question = input("Do you want to continue? [y/N]: ")
+    #     if not (c := continue_question.lower().strip()) or c != "y":
+    #         print("Aborting.")
+    #         return
 
     print("=== CONFIGURATION ===")
     print(f"src:              {src}")
@@ -462,12 +472,14 @@ def main(
                 ):
                     total_tokens_written += future.result()
 
-    log.info(f"Done! File(s) written to {output}")
-    log.info(f"Total tokens written: {total_tokens_written:,}")
+    log.error(f"Done! File(s) written to {output}")
+    log.error(f"Total tokens written: {total_tokens_written:,}")
 
     if validate:
         log.info("Validating...")
-        tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+        # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
+        # tokenizer = Tokenizer.from_file("/home/lvbo/olmo_data/tokenizer.json", truncate_to=None)
+        tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
 
         def encode_fn(row):
             return tokenizer.encode(json.loads(row)["text"], add_special_tokens=True)  # noqa
@@ -488,7 +500,7 @@ def main(
         assert total_tokens == 0, f"Total tokens mismatch: {total_tokens} != 0"
         assert total_docs == 0, f"Total docs mismatch: {total_docs} != 0"
 
-        log.info("All good!")
+        log.error("All good!")
 
 
 if __name__ == "__main__":

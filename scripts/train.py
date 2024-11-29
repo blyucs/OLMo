@@ -106,13 +106,15 @@ def main(cfg: TrainConfig) -> None:
     if cfg.wandb is not None and (get_global_rank() == 0 or not cfg.wandb.rank_zero_only):
         wandb_dir = Path(cfg.save_folder) / "wandb"
         wandb_dir.mkdir(parents=True, exist_ok=True)
+        # wandb.login(key="74c39c7f810caa79a4b9b7d97b918047d8ba6457", relogin=True, force=True)
+        print(cfg.wandb)
         wandb.init(
             dir=wandb_dir,
             project=cfg.wandb.project,
-            entity=cfg.wandb.entity,
-            group=cfg.wandb.group,
-            name=cfg.wandb.name,
-            tags=cfg.wandb.tags,
+            # entity=cfg.wandb.entity,
+            # group=cfg.wandb.group,
+            # name=cfg.wandb.name,
+            # tags=cfg.wandb.tags,
             config=cfg.asdict(exclude=["wandb"]),
         )
 
