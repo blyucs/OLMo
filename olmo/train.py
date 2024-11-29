@@ -1026,8 +1026,8 @@ class Trainer:
                 self.eval_step(eval_batch, evaluator)
 
                 # Log to console.
-                if eval_step + 1 == num_eval_batches or (eval_step + 1) % self.cfg.console_log_interval == 0:
-                    log.info(f"[eval_step={eval_step + 1}/{num_eval_batches}]")
+                # if eval_step + 1 == num_eval_batches or (eval_step + 1) % self.cfg.console_log_interval == 0:
+                #     log.info(f"[eval_step={eval_step + 1}/{num_eval_batches}]")
 
             # Get final metrics.
             metrics = evaluator.compute_metrics()
