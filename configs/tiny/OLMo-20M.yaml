@@ -158,27 +158,62 @@ evaluators:
 #        - https://olmo-data.org/eval-data/perplexity/v2_small_gptneox20b/twitterAEE/val.npy
 #        v2-small-wikitext_103-validation:
 #        - https://olmo-data.org/eval-data/perplexity/v2_small_gptneox20b/wikitext_103/val.npy
-
-  - label: piqa
+  - label: mmlu_stem_var
     type: downstream
 
-  - label: hellaswag
+  - label: mmlu_humanities_var
     type: downstream
 
-  - label: winogrande
+  - label: mmlu_social_sciences_var
     type: downstream
 
-  - label: openbook_qa
+  - label: mmlu_other_var
     type: downstream
 
-  # - label: boolq  # requires implemention of the pmi_dc matrix
-    # type: downstream
-
-  - label: sciq
+  - label: mmlu_stem_mc_5shot
     type: downstream
 
-  - label: arc_easy
+  - label: mmlu_humanities_mc_5shot
     type: downstream
+
+  - label: mmlu_social_sciences_mc_5shot
+    type: downstream
+
+  - label: mmlu_other_mc_5shot
+    type: downstream
+
+  - label: mmlu_stem_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_humanities_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_social_sciences_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_other_mc_5shot_test
+    type: downstream
+
+#  - label: piqa
+#    type: downstream
+#
+#  - label: hellaswag
+#    type: downstream
+#
+#  - label: winogrande
+#    type: downstream
+#
+#  - label: openbook_qa
+#    type: downstream
+#
+#  # - label: boolq  # requires implemention of the pmi_dc matrix
+#    # type: downstream
+#
+#  - label: sciq
+#    type: downstream
+#
+#  - label: arc_easy
+#    type: downstream
 
   # - label: arc_challenge  # requires implemention of the pmi_dc matrix
   #   type: downstream
