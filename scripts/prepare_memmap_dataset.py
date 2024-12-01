@@ -244,7 +244,8 @@ def fill_memmap(
     # we need to make a new tokenizer here because it's not pickleable
     # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
     # tokenizer = Tokenizer.from_file(tokenizer_id, truncate_to=None)
-    tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
+    # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
+    tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
 
     # first memmap file will be created in the loop below
     memmap: Optional[MemmapFile] = None
@@ -331,7 +332,10 @@ def make_source_and_target(
 
     # Extract the base name for destination path naming
     # base_filename = src[0].split('/')[-1].split('.')[0]  # Extracts 'output_file' from '/home/lvbo/olmo_data/output_file.json.gz'
-    base_filename = os.path.basename(src[0])  # Extracts the last part of the path without any file extension
+    # base_filename = os.path.basename(src[0])  # Extracts the last part of the path without any file extension
+    # 使用 os.path.normpath 先规范化路径，然后提取文件名
+    normalized_path = os.path.normpath(src[0])
+    base_filename = os.path.basename(normalized_path)
 
     # determine the destination paths
     exploded_dst = [f'{output.rstrip("/")}/{base_filename}_{i:0{output_digits}d}' for i in range(len(exploded_src))]
@@ -377,7 +381,7 @@ def make_source_and_target(
 )
 @click.option(
     "--max-tokens",
-    default=512 * 1024 * 1024,
+    default= 2 * 1024 * 1024 * 1024,
     type=int,
     help="Maximum number of tokens to store in a single memmap file (default: 512M tokens or 1GB)",
 )
@@ -393,7 +397,7 @@ def main(
     tokenizer_id: str = "EleutherAI/gpt-neox-20b",
     dtype_str: str = "uint16", # "uint32", # "uint16"
     validate: bool = False,
-    max_tokens: int = 512 * 1024 * 1024,
+    max_tokens: int = 2 * 1024 * 1024 * 1024,
     safe_mode: bool = False,
     debug: bool = True,
     sample_rate: float = 1.0,
@@ -481,7 +485,8 @@ def main(
         log.info("Validating...")
         # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
         # tokenizer = Tokenizer.from_file("/home/lvbo/olmo_data/tokenizer.json", truncate_to=None)
-        tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
+        # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
+        tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
 
         def encode_fn(row):
             return tokenizer.encode(json.loads(row)["text"], add_special_tokens=True)  # noqa
