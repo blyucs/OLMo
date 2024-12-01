@@ -101,7 +101,7 @@ max_grad_norm_ratio: null
 speed_monitor:
   window_size: 20
 
-eval_interval: 50
+eval_interval: 200
 eval_subset_num_batches: -1
 device_eval_batch_size: ${device_train_microbatch_size}
 evaluators:
@@ -188,17 +188,17 @@ evaluators:
   - label: mmlu_other_mc_5shot
     type: downstream
 
-  - label: mmlu_stem_mc_5shot_test
-    type: downstream
-
-  - label: mmlu_humanities_mc_5shot_test
-    type: downstream
-
-  - label: mmlu_social_sciences_mc_5shot_test
-    type: downstream
-
-  - label: mmlu_other_mc_5shot_test
-    type: downstream
+#  - label: mmlu_stem_mc_5shot_test
+#    type: downstream
+#
+#  - label: mmlu_humanities_mc_5shot_test
+#    type: downstream
+#
+#  - label: mmlu_social_sciences_mc_5shot_test
+#    type: downstream
+#
+#  - label: mmlu_other_mc_5shot_test
+#    type: downstream
 
   - label: basic_arithmetic
     type: downstream
@@ -226,6 +226,24 @@ data:
     repetition_max_count: 32
   paths:
     ######### NON WEB DATA #########
-    - /home/lvbo/10_train_data_olmo_orin/dolma2/wiki/part-1-00000.npy
+#    - /home/lvbo/10_train_data_olmo_orin/dolma2/wiki/part-1-00000.npy   # olmo2  wiki  4B
 #    - /home/lvbo/10_train_data_olmo_orin/part-000-00001.npy
 #    - /home/lvbo/10_train_data_olmo_orin/part-004-00001.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00000.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00001.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00002.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00003.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00004.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00000.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00001.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00002.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00003.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00004.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00000.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00001.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00002.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00003.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00004.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00000.npy
+   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00001.npy
+
