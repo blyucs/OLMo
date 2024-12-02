@@ -26,11 +26,13 @@ import gzip
 import json
 import os
 import logging
-
+import argparse
 url_keywords = {
+    ###### common start ####
     'en.wikipedia.org': 'Wikipedia',
     '.wikisource.org': 'Wikisource',
     '.cnn.com': 'CNN',
+    ###### common end ####
     # '.mdpi.com': 'MDPI',
     # '.nytimes.com': 'NYTimes',
     # '.archive.org': 'Archive',
@@ -148,9 +150,21 @@ def pack_jsonl_files_to_gz(directory, output_dir, max_size_gb=10):
 # Example usage
 # directory_path = '/home/lvbo/DCLM-data/Run_20241125-114153_0_to_2000'  # 设置你的文件夹路径
 # directory_path = '/home/lvbo/DCLM-data/Run_20241125-114925_2000_to_4000'  # 设置你的文件夹路径
-directory_path = '/home/lvbo/DCLM-data/Run_20241125-223437_4000_to_6000'  # 设置你的文件夹路径
-# directory_path = '/home/lvbo/DCLM-data/Run_20241125-114153_0_to_2000'  # 设置你的文件夹路径
-# output_gz_path = '/home/lvbo/02_gz_data/'  # 设置输出文件的路径
-output_gz_path = '/home/lvbo/04_gz_all_common/'  # 设置输出文件的路径
-pack_jsonl_files_to_gz(directory_path, output_gz_path, max_size_gb=20)
+# directory_path = '/home/lvbo/DCLM-data/Run_20241125-223437_4000_to_6000'  # 设置你的文件夹路径
+# # directory_path = '/home/lvbo/DCLM-data/Run_20241125-114153_0_to_2000'  # 设置你的文件夹路径
+# # output_gz_path = '/home/lvbo/02_gz_data/'  # 设置输出文件的路径
+# output_gz_path = '/home/lvbo/04_gz_all_common/'  # 设置输出文件的路径
+# pack_jsonl_files_to_gz(directory_path, output_gz_path, max_size_gb=20)
 
+def main():
+    parser = argparse.ArgumentParser(description="Pack JSONL files into gzipped format.")
+    parser.add_argument("directory", type=str, help="The directory with JSONL files to process.")
+    parser.add_argument("output_dir", type=str, help="The directory to save the gzipped files.")
+    parser.add_argument("--max_size_gb", type=int, default=10, help="Maximum size of each gzipped file in gigabytes.")
+
+    args = parser.parse_args()
+
+    pack_jsonl_files_to_gz(args.directory, args.output_dir, args.max_size_gb)
+
+if __name__ == "__main__":
+    main()
