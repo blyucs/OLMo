@@ -109,9 +109,9 @@ def main(cfg: TrainConfig) -> None:
             dir=wandb_dir,
             project=cfg.wandb.project,
             # entity=cfg.wandb.entity,
-            # group=cfg.wandb.group,
-            # name=cfg.wandb.name,
-            # tags=cfg.wandb.tags,
+            group=cfg.wandb.group,
+            name=cfg.wandb.name,
+            tags=cfg.wandb.tags,
             config=cfg.asdict(exclude=["wandb"]),
         )
 

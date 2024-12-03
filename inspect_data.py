@@ -5,8 +5,8 @@ from olmo.config import TrainConfig
 from olmo.data import build_memmap_dataset
 
 # Update these paths to what you want:
-data_order_file_path = cached_path("https://olmo-checkpoints.org/ai2-llm/olmo-medium/wvc30anm/train_data/global_indices.npy")  # 这个应该是流程中生产的。 用于训练中使用。
-train_config_path = "configs/official/OLMo-7B.yaml"
+data_order_file_path = cached_path("/home/lvbo/05_npy_all_common/Run_20241125-114925_2000_to_4000_0_00000.npy")  # 这个应该是流程中生产的。 用于训练中使用。
+train_config_path = "configs/tiny-my/OLMo-120M.yaml"
 
 
 cfg = TrainConfig.load(train_config_path)
@@ -15,7 +15,7 @@ dataset = build_memmap_dataset(cfg, cfg.data)
 # gpt-neox-20b-pii-special/part-000-00000.npy'}如，有0~2621438 个2048 token的片段。
 # 疑问是为什么映射这么快？下载下来了才映射吗？
 batch_size = cfg.global_train_batch_size
-global_indices = np.memmap(data_order_file_path, mode="r+", dtype=np.uint32)
+global_indices = np.memmap(data_order_file_path, mode="r+", dtype=np.uint16)
 
 
 def get_batch_instances(batch_idx: int) -> list[list[int]]:

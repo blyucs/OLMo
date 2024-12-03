@@ -1,10 +1,11 @@
-run_name: OLMo-120M
+run_name: OLMo-120M-uint32_0_2000_common-test
 seed: 6198
 dry_run: false
 
 wandb:
   name: ${run_name}
   project: olmo-tiny
+  group: common
 
 model:
   d_model: 512 # 256
@@ -101,15 +102,16 @@ max_grad_norm_ratio: null
 speed_monitor:
   window_size: 20
 
-eval_interval: 200
+eval_interval: 100
 eval_subset_num_batches: -1
 device_eval_batch_size: ${device_train_microbatch_size}
 evaluators:
-#  - label: all-small-ppl-validation
-#    data:
-#      num_workers: 0
-#      drop_last: true
-#      datasets:
+  - label: all-small-ppl-validation
+    data:
+      num_workers: 20
+      drop_last: true
+      memmap_dtype: uint32
+      datasets:
 #        c4_en-validation:
 #          - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/c4_en/val/part-0-00000.npy
 #        dolma_books-validation:
@@ -132,6 +134,28 @@ evaluators:
 #        - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/pile/val/part-0-00000.npy
 #        wikitext_103-validation:
 #          - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/wikitext_103/val/part-0-00000.npy
+        c4_en-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_c4_en/part-0-00000.npy
+        dolma_books-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_books/part-0-00000.npy
+        dolma_common-crawl-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_common-crawl/part-0-00000.npy
+        dolma_pes2o-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_pes2o/part-0-00000.npy
+        dolma_reddit-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_reddit/part-0-00000.npy
+        dolma_stack-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_stack/part-0-00000.npy
+        dolma_wiki-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_dolma_wiki/part-0-00000.npy
+        ice-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_ice/part-0-00000.npy
+        m2d2_s2orc-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_m2d2_s2orc/part-0-00000.npy
+        pile-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_pile/part-0-00000.npy
+        wikitext_103-validation:
+          - /home/lvbo/10_valid_data_dolma2/v3_small_gptneox20b_wikitext_103/part-0-00000.npy
 
   ##########################
   # Downstream evaluations #
@@ -147,7 +171,7 @@ evaluators:
 
   - label: openbook_qa
     type: downstream
- 
+
   - label: sciq
     type: downstream
 
@@ -159,10 +183,6 @@ evaluators:
 
   - label: social_iqa
     type: downstream
-
-  # Doesn't work from cache.
-  # - label: basic_arithmetic
-  #   type: downstream
 
   - label: mmlu_stem_var
     type: downstream
@@ -182,12 +202,12 @@ evaluators:
   - label: mmlu_humanities_mc_5shot
     type: downstream
 
-  - label: mmlu_social_sciences_mc_5shot
-    type: downstream
-
-  - label: mmlu_other_mc_5shot
-    type: downstream
-
+#  - label: mmlu_social_sciences_mc_5shot
+#    type: downstream
+#
+#  - label: mmlu_other_mc_5shot
+#    type: downstream
+#
 #  - label: mmlu_stem_mc_5shot_test
 #    type: downstream
 #
@@ -199,9 +219,6 @@ evaluators:
 #
 #  - label: mmlu_other_mc_5shot_test
 #    type: downstream
-
-  - label: basic_arithmetic
-    type: downstream
 
   - label: trivia_qa_wiki_ppl
     type: downstream
@@ -219,6 +236,7 @@ data:
   pin_memory: true
   prefetch_factor: 8
   persistent_workers: true
+  memmap_dtype: uint32
   timeout: 0
   instance_filter:
     repetition_max_period: 13
@@ -226,24 +244,76 @@ data:
     repetition_max_count: 32
   paths:
     ######### NON WEB DATA #########
+    - /home/lvbo/06_npy_uint32_0.03/Run_20241125-114153_0_to_2000_0_00000.npy
+#    - /home/lvbo/10_train_data_olmo_orin/dolma2/wiki/part-1-00000.npy   # olmo2  wiki  4B
 #    - /home/lvbo/10_train_data_olmo_orin/dolma2/wiki/part-1-00000.npy   # olmo2  wiki  4B
 #    - /home/lvbo/10_train_data_olmo_orin/part-000-00001.npy
 #    - /home/lvbo/10_train_data_olmo_orin/part-004-00001.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00000.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00001.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00002.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00003.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00004.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00000.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00001.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00002.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00003.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00004.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00000.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00001.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00002.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00003.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00004.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00000.npy
-   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00001.npy
+    # all filter
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00000.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00001.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00002.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00003.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_0_00004.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00000.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00001.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00002.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00003.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_1_00004.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00000.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00001.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00002.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00003.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_2_00004.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00000.npy
+#   - /home/lvbo/03_npy_data_dolma2/Run_20241125-114153_0_to_2000_3_00001.npy
+     #  common
+#   - /home/lvbo/05_npy_all_common/Run_20241125-114925_2000_to_4000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-114925_2000_to_4000_1_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-114925_2000_to_4000_1_00001.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-223437_4000_to_6000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-223437_4000_to_6000_0_00001.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-223448_6000_to_8000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-223448_6000_to_8000_0_00001.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-225207_10000_to_12000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-225207_10000_to_12000_0_00001.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-225347_12000_to_14000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241125-225347_12000_to_14000_0_00001.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241126-091826_14000_to_16000_0_00000.npy
+#   - /home/lvbo/05_npy_all_common/Run_20241126-091826_14000_to_16000_0_00001.npy
+   # common
+
+    # bjm
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/07_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/05_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/01_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/03_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/03_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/06_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/03_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/00_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/08_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/02_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/00_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/02_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/08_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/06_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/09_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/05_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/07_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/00_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/07_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/08_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/04_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/09_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/02_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/01_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/04_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/04_00000.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/09_00002.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/06_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/01_00001.npy
+#   - /root/a100_nas_lvbo/peixunban/2011_bjm/dclm_pretrain_token_npy/base/05_00002.npy
+  ## bjm end
+
 
