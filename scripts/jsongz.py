@@ -95,7 +95,7 @@ def setup_logging():
     logging.basicConfig(filename='jsonl_packing_errors.log', level=logging.INFO,
                         format='%(asctime)s:%(levelname)s:%(message)s')
 
-def pack_jsonl_files_to_gz(directory, output_dir, max_size_gb=10):
+def pack_jsonl_files_to_gz(directory, output_dir, max_size_gb=10, quality_thres=0.07):
     setup_logging()
     max_bytes = max_size_gb * 1024 * 1024 * 1024  # Convert GB to bytes
     current_size = 0
@@ -129,7 +129,8 @@ def pack_jsonl_files_to_gz(directory, output_dir, max_size_gb=10):
                             continue  # Skip empty lines
                         try:
                             json_object = json.loads(stripped_line)
-                            if 'text' in json_object: # and json_object['fasttext_openhermes_reddit_eli5_vs_rw_v2_bigram_200k_train_prob'] > 0.5:
+                            # if 'text' in json_object: # and json_object['fasttext_openhermes_reddit_eli5_vs_rw_v2_bigram_200k_train_prob'] > 0.15:
+                            if 'text' in json_object and json_object['fasttext_openhermes_reddit_eli5_vs_rw_v2_bigram_200k_train_prob'] > quality_thres:
                                 text_content = json_object['text']
                                 minimal_json = json.dumps({"text": text_content})
                                 if current_size + len(minimal_json.encode('utf-8')) + 1 > max_bytes:
@@ -140,8 +141,6 @@ def pack_jsonl_files_to_gz(directory, output_dir, max_size_gb=10):
                                 gzfile.write(minimal_json + '\n')
                                 current_size += len(minimal_json.encode('utf-8')) + 1
                                 total_size += len(minimal_json.encode('utf-8')) + 1
-                            else:
-                                print(f"Missing 'text' field at {file_path}, line {line_number}")
                         except json.JSONDecodeError as e:
                             print(f"Error decoding JSON at {file_path}, line {line_number}: {e}")
     print(f"Total size {total_size}")
@@ -161,10 +160,11 @@ def main():
     parser.add_argument("directory", type=str, help="The directory with JSONL files to process.")
     parser.add_argument("output_dir", type=str, help="The directory to save the gzipped files.")
     parser.add_argument("--max_size_gb", type=int, default=10, help="Maximum size of each gzipped file in gigabytes.")
+    parser.add_argument("--quality_thres", type=float, default=0.07, help="Maximum size of each gzipped file in gigabytes.")
 
     args = parser.parse_args()
 
-    pack_jsonl_files_to_gz(args.directory, args.output_dir, args.max_size_gb)
+    pack_jsonl_files_to_gz(args.directory, args.output_dir, args.max_size_gb, args.quality_thres)
 
 if __name__ == "__main__":
     main()

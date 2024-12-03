@@ -363,10 +363,10 @@ def make_source_and_target(
     "tokenizer_id",
     type=str,
     help="Name of path of a pretrained tokenizer",
-    default="allenai/eleuther-ai-gpt-neox-20b-pii-special",
+    default="stub",
 )
-@click.option("--dtype", "dtype_str", default="uint16")
-@click.option("--validate/--no-validate", default=False)
+@click.option("--dtype", "dtype_str", default="uint32")
+@click.option("--validate/--no-validate", default=True)
 @click.option("--sample-rate", type=click.FloatRange(min=0.0, max=1.0), default=1.0)
 @click.option("--random-seed", type=int, default=3920)
 @click.option("--repeat-sequence", type=click.IntRange(min=1), default=1)
@@ -392,8 +392,8 @@ def make_source_and_target(
 def main(
     src: Tuple[str, ...],
     output: str,
-    tokenizer_id: str = "EleutherAI/gpt-neox-20b",
-    dtype_str: str = "uint16", # "uint32", # "uint16"
+    tokenizer_id: str = "stub",
+    dtype_str: str = "uint32",
     validate: bool = False,
     max_tokens: int = 2 * 1024 * 1024 * 1024,
     safe_mode: bool = False,
