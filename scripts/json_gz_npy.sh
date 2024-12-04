@@ -5,22 +5,24 @@ export PYTHONPATH=./
 # 输入 JSON 目录列表
 declare -a json_dirs=(
 #    "/home/lvbo/DCLM-data/Run_20241125-114153_0_to_2000/"
-    "/home/lvbo/DCLM-data/Run_20241125-114925_2000_to_4000/"
+#    "/home/lvbo/DCLM-data/Run_20241125-114925_2000_to_4000/"
+#    "/home/lvbo/DCLM-data/Run_20241125-223437_4000_to_6000/"
+#    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-223448_6000_to_8000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-225207_10000_to_12000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-225347_12000_to_14000"
-#    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091826_14000_to_16000"
-#    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091852_16000_to_18000"
+    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091826_14000_to_16000"
+    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091852_16000_to_18000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090807_18000_to_20000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090831_20000_to_22000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090852_22000_to_24000"
 )
-QUALITY_THRES=0.03
+QUALITY_THRES=0.04
 # 单一的 GZ 输出目录和 NPY 输出目录
 GZ_DIR="/home/lvbo/04_gz_all_common"
-NPY_DIR="/home/lvbo/06_npy_uint32_$QUALITY_THRES"
+NPY_DIR="/root/a100_nas_lvbo/peixunban/002754_lvbo/15_npy_gpt_uint16_$QUALITY_THRES"
 
 # 最大 GZ 文件大小设置
-MAX_SIZE_GB=20
+MAX_SIZE_GB=5
 
 # 函数来处理每组路径
 process_group() {

@@ -607,7 +607,7 @@ class InstanceFilterConfig(BaseConfig):
 @dataclass
 class DataConfig(BaseConfig):
     paths: Optional[List[str]] = None
-    memmap_dtype: str = "uint16" # "uint32" # "uint16"
+    memmap_dtype: str = "uint16"
     datasets: Optional[Dict[str, List[str]]] = None
     label_mask_paths: Optional[List[str]] = None
     pad_direction: PaddingDirection = PaddingDirection.right
@@ -694,6 +694,17 @@ class CompilerConfig(BaseConfig):
     backend: str = "inductor"
     """
     The backend to use.
+    """
+
+    dynamic: Optional[bool] = None
+    """
+    From the torch docs:
+    
+    Use dynamic shape tracing. When this is True, we will up-front attempt to generate a kernel that is as dynamic
+    as possible to avoid recompilations when sizes change. This may not always work as some
+    operations/optimizations will force specialization; use TORCH_LOGS=dynamic to debug overspecialization. When
+    this is False, we will NEVER generate dynamic kernels, we will always specialize. By default (None), we
+    automatically detect if dynamism has occurred and compile a more dynamic kernel upon recompile.
     """
 
 

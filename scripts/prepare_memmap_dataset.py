@@ -245,8 +245,11 @@ def fill_memmap(
     # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
     # tokenizer = Tokenizer.from_file(tokenizer_id, truncate_to=None)
     # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
-    tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
-
+    # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
+    # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/OLMo-1B-tokenizer.json", truncate_to=None)
+    tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_eleuther-ai-gpt-neox-20b-pii-special.json",
+                                    truncate_to=None, eos_token_id=0, pad_token_id=1)
+    print(f'eos token id: {tokenizer.eos_token_id}, pad token id: {tokenizer.pad_token_id}')
     # first memmap file will be created in the loop below
     memmap: Optional[MemmapFile] = None
 
@@ -363,7 +366,7 @@ def make_source_and_target(
     "tokenizer_id",
     type=str,
     help="Name of path of a pretrained tokenizer",
-    default="allenai/eleuther-ai-gpt-neox-20b-pii-special",
+    default="stub",
     # default="meta-llama/Meta-Llama-3-70B-Instruct",
 )
 @click.option("--dtype", "dtype_str", default="uint16")
@@ -394,7 +397,7 @@ def make_source_and_target(
 def main(
     src: Tuple[str, ...],
     output: str,
-    tokenizer_id: str = "EleutherAI/gpt-neox-20b",
+    tokenizer_id: str = "stub",
     dtype_str: str = "uint16", # "uint32", # "uint16"
     validate: bool = False,
     max_tokens: int = 2 * 1024 * 1024 * 1024,
@@ -486,7 +489,11 @@ def main(
         # tokenizer = Tokenizer.from_pretrained(tokenizer_id, truncate_to=None)
         # tokenizer = Tokenizer.from_file("/home/lvbo/olmo_data/tokenizer.json", truncate_to=None)
         # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json", truncate_to=None)
-        tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
+        # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_dolma2.json", truncate_to=None)
+        # tokenizer = Tokenizer.from_file("olmo_data/tokenizers/OLMo-1B-tokenizer.json", truncate_to=None)
+        tokenizer = Tokenizer.from_file("olmo_data/tokenizers/allenai_eleuther-ai-gpt-neox-20b-pii-special.json",
+                                        truncate_to=None, eos_token_id=0, pad_token_id=1)
+        print(f'eos token id: {tokenizer.eos_token_id}, pad token id: {tokenizer.pad_token_id}')
 
         def encode_fn(row):
             return tokenizer.encode(json.loads(row)["text"], add_special_tokens=True)  # noqa

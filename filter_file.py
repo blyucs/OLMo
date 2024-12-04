@@ -64,7 +64,6 @@ url_keywords = {
     'genomebiology.biomedcentral.com': 'GenomeBiology',
     'infoq.com': 'InfoQ',
     'realclimate.org': 'RealClimate',
-
 # new  0----
     'theguardian.com': 'TheGuardian',
     'edition.cnn.com': 'EDITION_CNN',
