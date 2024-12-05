@@ -891,7 +891,8 @@ class TrainConfig(BaseConfig):
     """
     OLMo training configuration.
     """
-
+    input_path: str = ''
+    output_path: str = ''
     run_name: Optional[str] = None
     """
     The name of the run.

@@ -10,16 +10,17 @@ declare -a json_dirs=(
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-223448_6000_to_8000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-225207_10000_to_12000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241125-225347_12000_to_14000"
-    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091826_14000_to_16000"
-    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091852_16000_to_18000"
+#    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091826_14000_to_16000"
+#    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241126-091852_16000_to_18000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090807_18000_to_20000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090831_20000_to_22000"
 #    "/root/lvbo/002754_lvbo/00_DCLM_DATA/Run_20241127-090852_22000_to_24000"
+    "/root/a100_nas_lvbo/peixunban/002754_lvbo/physics_filt/26000-27000_ALL"
 )
-QUALITY_THRES=0.04
+QUALITY_THRES=0.15
 # 单一的 GZ 输出目录和 NPY 输出目录
 GZ_DIR="/home/lvbo/04_gz_all_common"
-NPY_DIR="/root/a100_nas_lvbo/peixunban/002754_lvbo/15_npy_gpt_uint16_$QUALITY_THRES"
+NPY_DIR="/root/a100_nas_lvbo/peixunban/002754_lvbo/15_npy_gpt_uint16_all_$QUALITY_THRES"
 
 # 最大 GZ 文件大小设置
 MAX_SIZE_GB=5

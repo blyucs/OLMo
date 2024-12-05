@@ -274,7 +274,7 @@ def main():
         safe_serialization=args.safe_serialization,
         include_tokenizer=args.include_tokenizer,
         tokenizer_path=args.tokenizer_json_path,
-        fix_eos_token_id=args.fix_eos_token_id,
+        fix_eos_token_id=0, # args.fix_eos_token_id,
         tmp_cleanup=args.tmp_cleanup,
     )
 

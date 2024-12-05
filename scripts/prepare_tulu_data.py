@@ -1,16 +1,15 @@
 """
 Script for preparing the Tulu V2 data for fine-tuning an OLMo model.
 """
-
 import logging
 from argparse import ArgumentParser
 from functools import partial
 from pathlib import Path
-
 import datasets as ds
 import numpy as np
 from rich.progress import track
-
+import sys, os
+sys.path.append(os.path.abspath('./'))
 from olmo.tokenizer import Tokenizer
 from olmo.util import prepare_cli_environment
 
@@ -25,6 +24,7 @@ def main(opts) -> None:
         tokenizer = Tokenizer.from_pretrained(opts.tokenizer, eos_token_id=opts.eos, pad_token_id=opts.pad)
 
     dataset = ds.load_dataset("allenai/tulu-v2-sft-mixture", split="train")
+    # dataset = ds.load_dataset("allenai/tulu-v3-sft-mixture", split="train")
 
     log.info("Tokenizing dataset...")
     dataset = dataset.map(
@@ -110,16 +110,17 @@ def preprocess(example, tokenizer: Tokenizer, max_seq_len: int):
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(description="Prepare Tulu V2 dataset")
-    parser.add_argument("output_dir", type=str, help="""Directory to save the results to.""")
+    parser.add_argument("-output_dir", type=str, help="""Directory to save the results to.""", default="/home/lvbo/tulu")
     parser.add_argument(
         "-t",
         "--tokenizer",
         type=str,
         help="""Tokenizer path or identifier.""",
-        default=Path(__file__).parent / "tokenizers" / "allenai_eleuther-ai-gpt-neox-20b-pii-special.json",
+        # default=Path(__file__).parent / "tokenizers" / "allenai_eleuther-ai-gpt-neox-20b-pii-special.json",
+        default="olmo_data/tokenizers/allenai_eleuther-ai-gpt-neox-20b-pii-special.json",
     )
     parser.add_argument("-s", "--seq-len", type=int, help="""Max sequence length.""", default=2048)
-    parser.add_argument("--eos", type=int, help="""EOS token ID.""", default=50279)
+    parser.add_argument("--eos", type=int, help="""EOS token ID.""", default=0)# 50279)
     parser.add_argument("--pad", type=int, help="""PAD token ID.""", default=1)
     parser.add_argument("-j", "--num-proc", type=int, help="""Number of workers.""", default=8)
     return parser

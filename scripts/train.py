@@ -15,7 +15,8 @@ from packaging import version
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp import ShardingStrategy
 from torch.nn.parallel import DistributedDataParallel as DDP
-
+import os
+sys.path.append(os.path.abspath('./'))
 from olmo.config import (
     CheckpointType,
     DDPGradSyncMode,
@@ -358,6 +359,5 @@ if __name__ == "__main__":
         yaml_path, args_list = sys.argv[1], sys.argv[2:]
     except IndexError:
         raise OLMoCliError(f"Usage: {sys.argv[0]} [CONFIG_PATH] [OPTIONS]")
-
     cfg = TrainConfig.load(yaml_path, [clean_opt(s) for s in args_list])
     main(cfg)
