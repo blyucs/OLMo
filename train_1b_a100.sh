@@ -13,23 +13,23 @@ cd $code_path
 pwd
 echo "current workpath: ${code_path}"
 
-TIME=$(date "+%Y-%m-%d_%H-%M")
+TIME=$(date "+%Y_%m_%d_%H_%M_%S")
 export TASK_NAME=olmo1b_$TIME 
 echo "task name: ${TASK_NAME}"
-#export WANDB_API_KEY=42cc6f11eac6a0e2d0c218044917b6f8e1189831
+export WANDB_API_KEY=74c39c7f810caa79a4b9b7d97b918047d8ba6457
 
 #export INPUT_PATH="/mnt/zhongziban/peixunban/002754_lvbo/ocean_token_corpus/"
 #export OUTPUT_PATH="/mnt/zhongziban/peixunban/002754_lvbo/llm_models/"
-export INPUT_PATH="/root/a100_nas_lvbo/peixunban/002754_lvbo/"
-export OUTPUT_PATH="/root/a100_nas_lvbo/peixunban/002754_lvbo/save_check/"
+export INPUT_PATH="/mnt/zhongziban/peixunban/002754_lvbo"
+export OUTPUT_PATH="/mnt/zhongziban/peixunban/002754_lvbo/save_check"
 
-#export load_path="${OUTPUT_PATH}/olmo1b_2024-12-03_10-08/step78000-unsharded/"
+export load_path="${OUTPUT_PATH}/olmo1b_2024_12_06_04_04_24/latest-unsharded"
 
 #export NUM_GPU=$( lspci | grep -i nvidia | wc -l )
 echo "before CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
-#export CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7"
-export CUDA_VISIBLE_DEVICES="0,1"
-export NUM_GPU=2
+export CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7"
+#export CUDA_VISIBLE_DEVICES="0,1"
+export NUM_GPU=8
 export config_path="configs/official/OLMo-1B-tiny.yaml"
 echo "NUM_GPU=${NUM_GPU}"
 echo "PYTHONPATH=$PYTHONPATH"
@@ -45,3 +45,4 @@ torchrun --nproc_per_node=${NUM_GPU} scripts/train.py \
     --wandb.name=$TASK_NAME  \
 #    --load_path=$load_path \
     > ${OUTPUT_PATH}/logs/${TASK_NAME}.log 2>&1
+#    2>&1 | tee ${OUTPUT_PATH}/logs/${TASK_NAME}.log

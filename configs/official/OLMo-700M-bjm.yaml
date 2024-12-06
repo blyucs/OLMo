@@ -1,0 +1,424 @@
+run_name: OLMo-700M-2
+seed: 6198
+dry_run: false
+
+wandb:
+  name: ${run_name}
+  project: olmo-tiny
+  entity: baijieming2024-zhejiang-lab
+
+model:
+  d_model: 1536
+  n_heads: 16
+  n_layers: 16
+  mlp_ratio: 8
+  weight_tying: false
+  alibi: false
+  rope: true
+  flash_attention: true
+  attention_dropout: 0.0
+  attention_layer_norm: false
+  clip_qkv: null
+  include_bias: false
+  block_type: sequential
+  layer_norm_type: rms
+  layer_norm_with_affine: true
+  layer_norm_eps: 1e-6
+  bias_for_layer_norm: false
+  attention_layer_norm_with_affine: false
+  activation_type: swiglu
+  residual_dropout: 0.0
+  embedding_dropout: 0.0
+  max_sequence_length: 1024
+  vocab_size: 50280
+  embedding_size: 50304
+  eos_token_id: 50279
+  pad_token_id: 1
+  init_device: cuda
+  init_fn: normal
+  init_std: 0.02
+  init_cutoff_factor: 3
+
+ddp:
+  grad_sync_mode: batch
+  find_unused_params: false
+
+compile: null
+
+optimizer:
+  name: adamw
+  learning_rate: 4.0e-4
+  weight_decay: 0.1
+  eps: 1e-8
+  decay_norm_and_bias: true
+  decay_embeddings: true
+  betas:
+  - 0.9
+  - 0.95
+  metrics_log_interval: 10
+
+scheduler:
+  name: cosine_with_warmup
+  t_warmup: 2000
+  alpha_f: 0.1
+  warmup_min_lr: 0
+
+tokenizer:
+  identifier: tokenizers/allenai_gpt-neox-olmo-dolma-v1_5.json
+  truncate_direction: right
+
+save_folder: workspace/${run_name} 
+# remote_save_folder: s3://ai2-llm/checkpoints/olmo-tiny/${run_name}
+save_overwrite: true
+save_interval: 200
+save_num_checkpoints_to_keep: 9
+# Unsharded checkpoints (for ddp)
+save_interval_unsharded: 5000
+save_num_unsharded_checkpoints_to_keep: -1
+
+load_path: null
+
+max_duration: 1ep
+stop_at: 406_934
+global_train_batch_size: 1024
+device_train_microbatch_size: 2
+
+precision: amp_bf16
+distributed_strategy: ddp
+
+gen1_gc_interval: 1
+
+fsdp:
+  wrapping_strategy: null
+  precision: mixed
+max_grad_norm: 1.0
+max_grad_norm_ratio: null
+
+
+speed_monitor:
+  window_size: 20
+
+eval_interval: ${save_interval}
+eval_subset_num_batches: -1
+device_eval_batch_size: ${device_train_microbatch_size}
+evaluators:
+  # - label: all-small-ppl-validation
+  #   data:
+  #     num_workers: 0
+  #     drop_last: true
+  #     datasets:
+  #       c4_en-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/c4_en/val/part-0-00000.npy
+  #       dolma_books-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_books/val/part-0-00000.npy
+  #       dolma_common-crawl-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_common-crawl/val/part-0-00000.npy
+  #       dolma_pes2o-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_pes2o/val/part-0-00000.npy
+  #       dolma_reddit-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_reddit/val/part-0-00000.npy
+  #       dolma_stack-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_stack/val/part-0-00000.npy
+  #       dolma_wiki-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/dolma_wiki/val/part-0-00000.npy
+  #       ice-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/ice/val/part-0-00000.npy
+  #       m2d2_s2orc-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/m2d2_s2orc/val/part-0-00000.npy
+  #       pile-validation:
+  #       - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/pile/val/part-0-00000.npy
+  #       wikitext_103-validation:
+  #         - s3://ai2-llm/eval-data/perplexity/v3_small_gptneox20b/wikitext_103/val/part-0-00000.npy
+
+  ##########################
+  # Downstream evaluations #
+  ##########################
+  - label: piqa
+    type: downstream
+
+  - label: hellaswag
+    type: downstream
+
+  - label: winogrande
+    type: downstream
+
+  - label: openbook_qa
+    type: downstream
+ 
+  - label: sciq
+    type: downstream
+
+  - label: arc_easy
+    type: downstream
+
+  - label: commonsense_qa
+    type: downstream
+
+  - label: social_iqa
+    type: downstream
+
+  # Doesn't work from cache.
+  # - label: basic_arithmetic
+  #   type: downstream
+
+  - label: mmlu_stem_var
+    type: downstream
+
+  - label: mmlu_humanities_var
+    type: downstream
+
+  - label: mmlu_social_sciences_var
+    type: downstream
+
+  - label: mmlu_other_var
+    type: downstream
+
+  - label: mmlu_stem_mc_5shot
+    type: downstream
+
+  - label: mmlu_humanities_mc_5shot
+    type: downstream
+
+  - label: mmlu_social_sciences_mc_5shot
+    type: downstream
+
+  - label: mmlu_other_mc_5shot
+    type: downstream
+
+  - label: mmlu_stem_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_humanities_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_social_sciences_mc_5shot_test
+    type: downstream
+
+  - label: mmlu_other_mc_5shot_test
+    type: downstream
+
+  - label: basic_arithmetic
+    type: downstream
+
+  - label: trivia_qa_wiki_ppl
+    type: downstream
+
+  - label: natural_qs_open_ppl
+    type: downstream
+
+  - label: arc_easy_ppl
+    type: downstream
+
+data:
+  pad_direction: right
+  num_workers: 2
+  drop_last: true
+  pin_memory: true
+  prefetch_factor: 8
+  persistent_workers: true
+  timeout: 0
+  instance_filter:
+    repetition_max_period: 13
+    repetition_min_period: 1
+    repetition_max_count: 32
+  paths:   
+   - /home/token_data/07_00013.npy
+   - /home/token_data/03_00007.npy
+   - /home/token_data/03_00011.npy
+   - /home/token_data/02_00012.npy
+   - /home/token_data/09_00006.npy
+   - /home/token_data/07_00002.npy
+   - /home/token_data/02_00011.npy
+   - /home/token_data/07_00014.npy
+   - /home/token_data/05_00001.npy
+   - /home/token_data/07_00008.npy
+   - /home/token_data/04_00009.npy
+   - /home/token_data/09_00017.npy
+   - /home/token_data/03_00004.npy
+   - /home/token_data/06_00008.npy
+   - /home/token_data/08_00009.npy
+   - /home/token_data/08_00018.npy
+   - /home/token_data/00_00008.npy
+   - /home/token_data/00_00012.npy
+   - /home/token_data/00_00004.npy
+   - /home/token_data/05_00013.npy
+   - /home/token_data/01_00000.npy
+   - /home/token_data/04_00008.npy
+   - /home/token_data/01_00010.npy
+   - /home/token_data/05_00005.npy
+   - /home/token_data/02_00017.npy
+   - /home/token_data/07_00003.npy
+   - /home/token_data/02_00014.npy
+   - /home/token_data/05_00019.npy
+   - /home/token_data/08_00016.npy
+   - /home/token_data/03_00017.npy
+   - /home/token_data/09_00010.npy
+   - /home/token_data/03_00000.npy
+   - /home/token_data/01_00011.npy
+   - /home/token_data/08_00008.npy
+   - /home/token_data/03_00001.npy
+   - /home/token_data/04_00015.npy
+   - /home/token_data/00_00006.npy
+   - /home/token_data/03_00008.npy
+   - /home/token_data/03_00005.npy
+   - /home/token_data/06_00002.npy
+   - /home/token_data/06_00005.npy
+   - /home/token_data/05_00018.npy
+   - /home/token_data/06_00013.npy
+   - /home/token_data/03_00013.npy
+   - /home/token_data/09_00014.npy
+   - /home/token_data/00_00013.npy
+   - /home/token_data/02_00006.npy
+   - /home/token_data/05_00016.npy
+   - /home/token_data/04_00016.npy
+   - /home/token_data/03_00002.npy
+   - /home/token_data/04_00004.npy
+   - /home/token_data/00_00017.npy
+   - /home/token_data/00_00002.npy
+   - /home/token_data/06_00009.npy
+   - /home/token_data/08_00010.npy
+   - /home/token_data/01_00017.npy
+   - /home/token_data/02_00016.npy
+   - /home/token_data/02_00008.npy
+   - /home/token_data/06_00010.npy
+   - /home/token_data/07_00015.npy
+   - /home/token_data/00_00019.npy
+   - /home/token_data/00_00010.npy
+   - /home/token_data/05_00017.npy
+   - /home/token_data/07_00011.npy
+   - /home/token_data/06_00012.npy
+   - /home/token_data/08_00001.npy
+   - /home/token_data/05_00007.npy
+   - /home/token_data/01_00012.npy
+   - /home/token_data/02_00002.npy
+   - /home/token_data/04_00007.npy
+   - /home/token_data/02_00007.npy
+   - /home/token_data/09_00008.npy
+   - /home/token_data/00_00007.npy
+   - /home/token_data/05_00015.npy
+   - /home/token_data/00_00009.npy
+   - /home/token_data/04_00006.npy
+   - /home/token_data/09_00018.npy
+   - /home/token_data/00_00000.npy
+   - /home/token_data/01_00014.npy
+   - /home/token_data/00_00018.npy
+   - /home/token_data/02_00001.npy
+   - /home/token_data/02_00005.npy
+   - /home/token_data/09_00019.npy
+   - /home/token_data/04_00005.npy
+   - /home/token_data/08_00002.npy
+   - /home/token_data/06_00003.npy
+   - /home/token_data/06_00000.npy
+   - /home/token_data/02_00009.npy
+   - /home/token_data/02_00015.npy
+   - /home/token_data/00_00015.npy
+   - /home/token_data/00_00014.npy
+   - /home/token_data/02_00003.npy
+   - /home/token_data/07_00017.npy
+   - /home/token_data/09_00007.npy
+   - /home/token_data/08_00013.npy
+   - /home/token_data/00_00005.npy
+   - /home/token_data/09_00004.npy
+   - /home/token_data/01_00019.npy
+   - /home/token_data/06_00016.npy
+   - /home/token_data/04_00019.npy
+   - /home/token_data/02_00004.npy
+   - /home/token_data/03_00016.npy
+   - /home/token_data/02_00019.npy
+   - /home/token_data/09_00001.npy
+   - /home/token_data/02_00010.npy
+   - /home/token_data/05_00000.npy
+   - /home/token_data/09_00005.npy
+   - /home/token_data/07_00010.npy
+   - /home/token_data/03_00003.npy
+   - /home/token_data/09_00015.npy
+   - /home/token_data/08_00014.npy
+   - /home/token_data/07_00018.npy
+   - /home/token_data/06_00004.npy
+   - /home/token_data/03_00015.npy
+   - /home/token_data/06_00006.npy
+   - /home/token_data/03_00019.npy
+   - /home/token_data/08_00006.npy
+   - /home/token_data/05_00004.npy
+   - /home/token_data/07_00009.npy
+   - /home/token_data/06_00007.npy
+   - /home/token_data/07_00005.npy
+   - /home/token_data/05_00008.npy
+   - /home/token_data/07_00000.npy
+   - /home/token_data/04_00003.npy
+   - /home/token_data/01_00003.npy
+   - /home/token_data/06_00015.npy
+   - /home/token_data/01_00015.npy
+   - /home/token_data/05_00006.npy
+   - /home/token_data/00_00001.npy
+   - /home/token_data/07_00016.npy
+   - /home/token_data/01_00004.npy
+   - /home/token_data/07_00001.npy
+   - /home/token_data/06_00019.npy
+   - /home/token_data/09_00003.npy
+   - /home/token_data/03_00018.npy
+   - /home/token_data/08_00000.npy
+   - /home/token_data/08_00012.npy
+   - /home/token_data/04_00018.npy
+   - /home/token_data/05_00010.npy
+   - /home/token_data/04_00001.npy
+   - /home/token_data/09_00000.npy
+   - /home/token_data/05_00009.npy
+   - /home/token_data/08_00007.npy
+   - /home/token_data/08_00003.npy
+   - /home/token_data/07_00012.npy
+   - /home/token_data/05_00003.npy
+   - /home/token_data/03_00012.npy
+   - /home/token_data/06_00011.npy
+   - /home/token_data/01_00018.npy
+   - /home/token_data/06_00017.npy
+   - /home/token_data/03_00014.npy
+   - /home/token_data/08_00004.npy
+   - /home/token_data/09_00011.npy
+   - /home/token_data/08_00019.npy
+   - /home/token_data/02_00000.npy
+   - /home/token_data/04_00010.npy
+   - /home/token_data/05_00011.npy
+   - /home/token_data/09_00012.npy
+   - /home/token_data/01_00008.npy
+   - /home/token_data/09_00009.npy
+   - /home/token_data/02_00018.npy
+   - /home/token_data/08_00011.npy
+   - /home/token_data/01_00002.npy
+   - /home/token_data/07_00007.npy
+   - /home/token_data/01_00016.npy
+   - /home/token_data/04_00002.npy
+   - /home/token_data/09_00016.npy
+   - /home/token_data/04_00000.npy
+   - /home/token_data/01_00006.npy
+   - /home/token_data/07_00004.npy
+   - /home/token_data/03_00009.npy
+   - /home/token_data/04_00013.npy
+   - /home/token_data/07_00019.npy
+   - /home/token_data/07_00006.npy
+   - /home/token_data/01_00005.npy
+   - /home/token_data/03_00010.npy
+   - /home/token_data/02_00013.npy
+   - /home/token_data/04_00011.npy
+   - /home/token_data/04_00012.npy
+   - /home/token_data/09_00002.npy
+   - /home/token_data/05_00012.npy
+   - /home/token_data/01_00013.npy
+   - /home/token_data/08_00017.npy
+   - /home/token_data/08_00005.npy
+   - /home/token_data/04_00014.npy
+   - /home/token_data/01_00009.npy
+   - /home/token_data/06_00001.npy
+   - /home/token_data/00_00016.npy
+   - /home/token_data/09_00013.npy
+   - /home/token_data/01_00001.npy
+   - /home/token_data/04_00017.npy
+   - /home/token_data/06_00018.npy
+   - /home/token_data/00_00011.npy
+   - /home/token_data/00_00003.npy
+   - /home/token_data/05_00014.npy
+   - /home/token_data/08_00015.npy
+   - /home/token_data/03_00006.npy
+   - /home/token_data/06_00014.npy
+   - /home/token_data/01_00007.npy
+   - /home/token_data/05_00002.npy
