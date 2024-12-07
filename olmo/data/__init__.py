@@ -114,7 +114,7 @@ def build_train_dataloader(
             train_config.global_train_batch_size,
             seed=seed,
             epoch=train_config.epoch or 0,
-            shuffle= False, #True,
+            shuffle= True,
             drop_last=train_config.data.drop_last,
             world_size=world_size,
             rank=rank,
