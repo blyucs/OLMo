@@ -17,7 +17,8 @@ cd "$cur_project_dir"
 echo "Changed to directory: $(pwd)"
 
 # 定义基地址
-base_dir="/root/a100_nas_lvbo/peixunban/002754_lvbo/physics_filt"
+#base_dir="/root/a100_nas_lvbo/peixunban/002754_lvbo/physics_filt"
+base_dir="/root/a100_nas_lvbo/peixunban/002754_lvbo/liter_filt"
 
 # Total number of files and range
 START_FILE=${1:-5001}    # Default to 0 if not specified

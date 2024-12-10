@@ -23,14 +23,15 @@ def main(opts) -> None:
     else:
         tokenizer = Tokenizer.from_pretrained(opts.tokenizer, eos_token_id=opts.eos, pad_token_id=opts.pad)
 
-    dataset = ds.load_dataset("allenai/tulu-v2-sft-mixture", split="train")
+    dataset = ds.load_dataset("/home/lvbo/huggingface-dataset/tulu_v2", split="train")
     # dataset = ds.load_dataset("allenai/tulu-v3-sft-mixture", split="train")
+    # dataset = ds.load_dataset("/home/lvbo/huggingface-dataset/tulu_v3", split="train")
 
     log.info("Tokenizing dataset...")
     dataset = dataset.map(
         partial(preprocess, tokenizer=tokenizer, max_seq_len=opts.seq_len),
         batched=False,
-        remove_columns=["dataset", "id", "messages"],
+        remove_columns=["dataset", "id", "messages"], # V2
         num_proc=opts.num_proc,  # type: ignore
     )
 
@@ -110,7 +111,7 @@ def preprocess(example, tokenizer: Tokenizer, max_seq_len: int):
 
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(description="Prepare Tulu V2 dataset")
-    parser.add_argument("-output_dir", type=str, help="""Directory to save the results to.""", default="/home/lvbo/tulu")
+    parser.add_argument("-output_dir", type=str, help="""Directory to save the results to.""", default="/home/lvbo/tulu_v3")
     parser.add_argument(
         "-t",
         "--tokenizer",

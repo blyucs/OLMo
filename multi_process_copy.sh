@@ -2,7 +2,7 @@
 export OMP_NUM_THREADS=1
 
 # Define the path to the Python script
-SCRIPT_PATH="append_files_and_filt_quality.py"
+#SCRIPT_PATH="append_files_and_filt_quality.py"
 
 # Define current project directory
 cur_project_dir="$(pwd)"
@@ -47,6 +47,7 @@ fi
 #> "$out_dir/wikipedia_counts.txt"
 
 # Execute Python script to process specified file range
+
 for ((i=0; i<NUM_CORES; i++)); do
     start_index=$((START_FILE + i * FILES_PER_CORE))
     end_index=$((start_index + FILES_PER_CORE - 1))

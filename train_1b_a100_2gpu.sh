@@ -41,7 +41,7 @@ torch_version=$(python -c "import torch; print(torch.__version__)")
 echo "PyTorch version: $torch_version"
 
 #watch -n 2 "nvidia-smi >> ${OUTPUT_PATH}/logs/${TASK_NAME}.txt" &
-nohup watch -n 2 "nvidia-smi >> ${OUTPUT_PATH}/logs/${TASK_NAME}.txt" &
+nohup watch -n 20 "nvidia-smi >> ${OUTPUT_PATH}/logs/${TASK_NAME}.txt" &
 
 PYTHONPATH="./":$PYTHONPATH \
 torchrun --nproc_per_node=${NUM_GPU} scripts/train.py \
